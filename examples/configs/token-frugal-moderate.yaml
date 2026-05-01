@@ -1,0 +1,78 @@
+# OpenClaw 省 token 配置 — 推荐档
+#
+# 平衡成本节省与响应质量。
+# 应用方式：openclaw config patch examples/configs/token-frugal-moderate.yaml
+#
+# 替换 <your-main-model>、<your-cheap-model> 和 <your-lowest-cost-model>
+# 为你的模型引用。示例：
+#   <your-main-model>         → anthropic/claude-sonnet-4-6, openai/gpt-5.4
+#   <your-cheap-model>        → openrouter/deepseek/deepseek-chat-v3-0324, anthropic/claude-haiku-4-5
+#   <your-lowest-cost-model>  → ollama/qwen3:4b, openrouter/meta-llama/llama-3.3-70b:free
+
+agents:
+  defaults:
+    # ── 1. 系统 Prompt 瘦身 ──
+    bootstrapMaxChars: 5000
+    bootstrapTotalMaxChars: 30000
+    contextInjection: "continuation-skip"
+
+    # ── 2. 模型分层路由 ──
+    model:
+      primary: "<your-main-model>"
+    subagents:
+      model: "<your-cheap-model>"
+    heartbeat:
+      model: "<your-cheap-model>"
+    compaction:
+      model: "<your-cheap-model>"
+
+    # ── 3. 上下文管理与裁剪 ──
+    contextPruning:
+      mode: "cache-ttl"
+      ttl: "1h"
+      keepLastAssistants: 3
+      softTrimRatio: 0.7
+      hardClearRatio: 0.85
+    compaction:
+      reserveTokensFloor: 20000
+    contextLimits:
+      toolResultMaxChars: 8000
+      postCompactionMaxChars: 1200
+      memoryGetMaxChars: 6000
+
+    # ── 4. Prompt 缓存 ──
+    # Anthropic provider 默认自动启用 cacheRetention: "short"。
+    # 非 Anthropic provider 需取消注释并设置：
+    # models:
+    #   "<your-main-model>":
+    #     params:
+    #       cacheRetention: "short"
+
+    # ── 5. 工具和媒体限制 ──
+    imageMaxDimensionPx: 600
+
+    # ── 6. 心跳与后台控制 ──
+    heartbeat:
+      every: "120m"
+      target: "none"
+      activeHours:
+        start: "09:00"
+        end: "22:00"
+        timezone: "local"
+
+# 记忆 QMD 限制
+memory:
+  qmd:
+    limits:
+      maxInjectedChars: 6000
+      maxResults: 4
+      maxSnippetChars: 500
+
+# 网页工具限制
+tools:
+  web:
+    search:
+      maxResults: 3
+    fetch:
+      maxChars: 8000
+      maxResponseBytes: 300000

@@ -224,6 +224,7 @@ rejects that combination with HTTP 401.
 - Lower `agents.defaults.imageMaxDimensionPx` for screenshot-heavy sessions.
 - Keep skill descriptions short (skill list is injected into the prompt).
 - Prefer smaller models for verbose, exploratory work.
+- For a comprehensive knob-by-knob optimization guide with ready-to-apply config templates, see [Token optimization](/reference/token-optimization).
 
 See [Skills](/tools/skills) for the exact skill list overhead formula.
 

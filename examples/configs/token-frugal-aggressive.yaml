@@ -1,0 +1,88 @@
+# OpenClaw 省 token 配置 — 激进档
+#
+# 最大程度节省 token，部分质量有所取舍。
+# 应用方式：openclaw config patch examples/configs/token-frugal-aggressive.yaml
+#
+# 警告：以下部分设置可能降低响应质量、截断重要上下文或降低
+# OCR 准确率，请先审阅再应用。
+#
+# 替换 <your-main-model>、<your-cheap-model> 和 <your-lowest-cost-model>
+# 为你的模型引用。示例：
+#   <your-main-model>         → anthropic/claude-sonnet-4-6, openai/gpt-5.4
+#   <your-cheap-model>        → openrouter/deepseek/deepseek-chat-v3-0324, anthropic/claude-haiku-4-5
+#   <your-lowest-cost-model>  → ollama/qwen3:4b, openrouter/meta-llama/llama-3.3-70b:free
+
+agents:
+  defaults:
+    # ── 1. 系统 Prompt 瘦身 ──
+    # bootstrapMaxChars: 3000 可能截断 AGENTS.md 中的关键规则。
+    # 确保 AGENTS.md 在 3000 字符以内，否则请调高此值。
+    bootstrapMaxChars: 3000
+    bootstrapTotalMaxChars: 15000
+    contextInjection: "continuation-skip"
+
+    # ── 2. 模型分层路由 ──
+    model:
+      primary: "<your-main-model>"
+    subagents:
+      model: "<your-cheap-model>"
+    heartbeat:
+      model: "<your-lowest-cost-model>"
+    compaction:
+      model: "<your-cheap-model>"
+
+    # ── 3. 上下文管理与裁剪 ──
+    # contextPruning.ttl: "30m" 裁剪较激进 — 间隔超过 30 分钟的
+    # 对话可能丢失上下文。
+    contextPruning:
+      mode: "cache-ttl"
+      ttl: "30m"
+      keepLastAssistants: 2
+      softTrimRatio: 0.5
+      hardClearRatio: 0.75
+    compaction:
+      reserveTokensFloor: 10000
+    contextLimits:
+      toolResultMaxChars: 4000
+      postCompactionMaxChars: 800
+      memoryGetMaxChars: 3000
+
+    # ── 4. Prompt 缓存 ──
+    # Anthropic provider 默认自动启用 cacheRetention: "short"。
+    # 非 Anthropic provider 需取消注释并设置：
+    # models:
+    #   "<your-main-model>":
+    #     params:
+    #       cacheRetention: "short"
+
+    # ── 5. 工具和媒体限制 ──
+    # imageMaxDimensionPx: 400 可能降低 OCR/截图识别准确率。
+    # web.fetch.maxChars: 4000 可能无法获取足够页面内容。
+    imageMaxDimensionPx: 400
+
+    # ── 6. 心跳与后台控制 ──
+    # heartbeat.every: "4h" 可能导致长空闲后缓存失效。
+    heartbeat:
+      every: "4h"
+      target: "none"
+      activeHours:
+        start: "09:00"
+        end: "18:00"
+        timezone: "local"
+
+# 记忆 QMD 限制
+memory:
+  qmd:
+    limits:
+      maxInjectedChars: 3000
+      maxResults: 3
+      maxSnippetChars: 300
+
+# 网页工具限制
+tools:
+  web:
+    search:
+      maxResults: 2
+    fetch:
+      maxChars: 4000
+      maxResponseBytes: 150000
