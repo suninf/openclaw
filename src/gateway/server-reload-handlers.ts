@@ -32,6 +32,7 @@ import { applyGatewayLaneConcurrency } from "./server-lanes.js";
 import { markGatewayModelCatalogStaleForReload } from "./server-model-catalog.js";
 import {
   type GatewayChannelManager,
+  isGatewayCronEnabled,
   startGatewayChannelHealthMonitor,
   startGatewayCronWithLogging,
 } from "./server-runtime-services.js";
@@ -267,10 +268,12 @@ export function createGatewayReloadHandlers(params: GatewayReloadHandlerParams) 
         deps: params.deps,
         broadcast: params.broadcast,
       });
-      startGatewayCronWithLogging({
-        cron: nextState.cronState.cron,
-        logCron: params.logCron,
-      });
+      if (isGatewayCronEnabled()) {
+        startGatewayCronWithLogging({
+          cron: nextState.cronState.cron,
+          logCron: params.logCron,
+        });
+      }
     }
 
     if (plan.restartHealthMonitor) {

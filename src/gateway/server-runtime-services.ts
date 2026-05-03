@@ -1,5 +1,5 @@
 import type { OpenClawConfig } from "../config/types.openclaw.js";
-import { isVitestRuntimeEnv } from "../infra/env.js";
+import { isTruthyEnvValue, isVitestRuntimeEnv } from "../infra/env.js";
 import { startHeartbeatRunner, type HeartbeatRunner } from "../infra/heartbeat-runner.js";
 import type { PluginLookUpTable } from "../plugins/plugin-lookup-table.js";
 import type { ChannelHealthMonitor } from "./channel-health-monitor.js";
@@ -51,6 +51,10 @@ export function startGatewayCronWithLogging(params: {
   logCron: { error: (message: string) => void };
 }): void {
   void params.cron.start().catch((err) => params.logCron.error(`failed to start: ${String(err)}`));
+}
+
+export function isGatewayCronEnabled(): boolean {
+  return isTruthyEnvValue(process.env.OPENCLAW_ENABLE_CRON);
 }
 
 function recoverPendingOutboundDeliveries(params: {
@@ -163,10 +167,12 @@ export function activateGatewayScheduledServices(params: {
     return { heartbeatRunner: createNoopHeartbeatRunner() };
   }
   const heartbeatRunner = startHeartbeatRunner({ cfg: params.cfgAtStart });
-  startGatewayCronWithLogging({
-    cron: params.cron,
-    logCron: params.logCron,
-  });
+  if (isGatewayCronEnabled()) {
+    startGatewayCronWithLogging({
+      cron: params.cron,
+      logCron: params.logCron,
+    });
+  }
   recoverPendingOutboundDeliveries({
     cfg: params.cfgAtStart,
     log: params.log,
