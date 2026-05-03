@@ -41,13 +41,10 @@ can affect bundled plugins and third-party plugins.
   light contract file and the deferred side on a dedicated runtime subpath.
 - Prefer `api.runtime` or a focused SDK facade over telling extensions to reach
   into host internals directly.
-- When core or tests need bundled plugin helpers, prefer the plugin package
+- When core needs bundled plugin helpers, prefer the plugin package
   `api.ts` or `runtime-api.ts` plus generic SDK capabilities. Do not add a
   provider-named `src/plugin-sdk/<id>.ts` seam just to make core aware of a
   bundled channel's private helpers.
-- Resolver/facade loader tests are the exception to broad source API coverage:
-  use generated tiny plugin fixtures for `api.js` / `runtime-api.js` fallback
-  behavior. Do not point those tests at real bundled plugin source APIs.
 - For provider work, prefer family-level seams over provider-specific seams.
   Shared helpers should describe a reusable behavior such as replay policy,
   tool-schema compat, payload normalization, stream-wrapper composition, or
@@ -86,8 +83,6 @@ can affect bundled plugins and third-party plugins.
 - If a bundled channel/helper need crosses package boundaries, first ask
   whether the need is truly generic. If yes, add a narrow generic subpath. If
   not, keep it plugin-local through `api.ts` / `runtime-api.ts`.
-- When expanding provider-facing seams, update or add the matching narrow tests
-  that lock the contract: Plugin SDK baseline/export checks for public subpaths
-  and the most direct provider/plugin tests for the behavior you are
-  centralizing.
+- When expanding provider-facing seams, keep Plugin SDK baseline/export checks
+  for public subpaths up to date.
 - Breaking removals or renames are major-version work, not drive-by cleanup.

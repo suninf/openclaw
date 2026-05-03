@@ -38,10 +38,9 @@ Use this flow when OpenClaw needs unreleased ACPX changes before the ACPX versio
 When ACPX integration changes here, prefer this sequence:
 
 1. `pnpm install --filter ./extensions/acpx`
-2. `pnpm test:extension acpx`
-3. `pnpm build`
-4. Restart the local gateway if ACP runtime behavior or bundled plugin wiring changed.
-5. If the change affects direct ACP behavior in chat, run a real ACP smoke after restart.
+2. `pnpm build`
+3. Restart the local gateway if ACP runtime behavior or bundled plugin wiring changed.
+4. If the change affects direct ACP behavior in chat, run a real ACP smoke after restart.
 
 ## Direct ACPX Binary Policy
 

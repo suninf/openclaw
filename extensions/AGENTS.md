@@ -34,8 +34,8 @@ third-party plugins see.
 - Treat files like `src/**`, `onboard.ts`, and other local helpers as private
   unless you intentionally promote them through `api.ts` and, if needed, a
   matching `src/plugin-sdk/<id>.ts` facade.
-- If core or core tests need a bundled plugin helper, export it from `api.ts`
-  first instead of letting them deep-import extension internals.
+- If core needs a bundled plugin helper, export it from `api.ts` first instead
+  of letting it deep-import extension internals.
 - For provider plugins, keep auth, onboarding, catalog selection, and
   vendor-only product behavior local to the plugin. Do not move those into
   core just because two providers look similar.

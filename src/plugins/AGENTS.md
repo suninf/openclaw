@@ -43,8 +43,8 @@ assembly, and contract enforcement.
 - If a plugin exposes separate light and heavy runtime surfaces, keep discovery,
   inventory, and setup-state checks on the light path until actual execution
   needs the heavy module.
-- If a loader or registry change affects plugin authors, update the public SDK,
-  docs, and contract tests instead of relying on incidental internals.
+- If a loader or registry change affects plugin authors, update the public SDK
+  and docs instead of relying on incidental internals.
 - Prefer explicit activation planning from manifest/descriptor ownership over
   “load everything in this scope” behavior. Broad registry materialization
   should be the exception, not the design center.
@@ -54,9 +54,9 @@ assembly, and contract enforcement.
   wiring.
 - When plugin-owned tools or provider fallbacks need core participation, keep
   the contract generic and honor plugin disablement plus SecretRef semantics.
-- Keep contract loading and contract tests on the dedicated bundled registry
-  path. Do not make contract validation depend on activating providers through
-  unrelated production resolution flows.
+- Keep contract loading on the dedicated bundled registry path. Do not make
+  contract validation depend on activating providers through unrelated
+  production resolution flows.
 - Prefer shared provider-family helpers over ad hoc policy in plugin registry
   hooks. If multiple providers need the same replay policy, tool compat, stream
   wrapper composition, or payload patch behavior, centralize that helper before
@@ -75,9 +75,6 @@ assembly, and contract enforcement.
 - If setup, discovery, or doctor flows need plugin runtime, make that need
   explicit and narrow. Do not let cold control-plane paths quietly import broad
   runtime surfaces.
-- Resolver and public-surface loader tests must use generated tiny plugin
-  fixtures for broad `api.js` / `runtime-api.js` fallback behavior. Do not point
-  those tests at real bundled plugin source APIs just to prove path resolution.
 
 ## Verification
 
